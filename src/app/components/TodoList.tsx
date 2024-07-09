@@ -9,7 +9,10 @@ interface Todo {
     text: string,
     completed: boolean
 };
-export const TodoList: React.FC= ({initialTodoList})=>{
+interface TodoProps {
+    initialTodoList: Todo[]
+}
+export const TodoList: React.FC<TodoProps>= ({initialTodoList})=>{
  const [todosList, setTodoList] = useState<Todo []>(initialTodoList);
  const handleDelete = (id: number)=>{
   setTodoList(todosList.filter((todo)=> todo.id !== id));
