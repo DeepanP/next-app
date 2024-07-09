@@ -1,34 +1,86 @@
 'use client';
 
-import { useState } from "react";
+import { useQuery, useMutation, gql } from '@apollo/client';
 import AddTodo from './AddTodo';
 import TodoItem from './TodoItem';
 
-interface Todo {
-    id: number,
-    text: string,
-    completed: boolean
-};
-export const TodoList: React.FC= ({initialTodoList})=>{
- const [todosList, setTodoList] = useState<Todo []>(initialTodoList);
- const handleDelete = (id: number)=>{
-  setTodoList(todosList.filter((todo)=> todo.id !== id));
- }
-
- const handleToogle = (item: Todo)=>{
-  setTodoList(todosList.map((todo)=>((todo.id === item.id) ? item : todo)));
- }
- const handleAdd = (item: Todo)=>{
-  setTodoList([...todosList, item])
- };
-  return (
-    <>
-    <AddTodo onAdd={handleAdd}/>
-    {
-      todosList.map((todoItem, index)=>(
-        <TodoItem key={todoItem.id} todo={todoItem} onDelete={handleDelete} onToggle={handleToogle}/>
-      ))
+const GET_TODOS = gql`
+  query GetTodos {
+    todos {
+      id
+      text
+      completed
     }
-    </>
-  )
+  }
+`;
+
+const ADD_TODO = gql`
+  mutation AddTodo($text: String!) {
+    addTodo(text: $text) {
+      id
+      text
+      completed
+    }
+  }
+`;
+
+const TOGGLE_TODO = gql`
+  mutation ToggleTodo($id: ID!) {
+    toggleTodo(id: $id) {
+      id
+      completed
+    }
+  }
+`;
+
+const DELETE_TODO = gql`
+  mutation DeleteTodo($id: ID!) {
+    deleteTodo(id: $id)
+  }
+`;
+
+export default function TodoList({ initialTodos }) {
+  const { data, refetch } = useQuery(GET_TODOS, {
+    initialData: initialTodos
+  });
+  const [addTodoMutation] = useMutation(ADD_TODO);
+  const [toggleTodoMutation] = useMutation(TOGGLE_TODO);
+  const [deleteTodoMutation] = useMutation(DELETE_TODO);
+
+  const handleAdd = async (text) => {
+    await addTodoMutation({
+      variables: { text },
+      refetchQueries: [{ query: GET_TODOS }],
+    });
+  };
+
+  const handleToggle = async (id) => {
+    await toggleTodoMutation({
+      variables: { id },
+      refetchQueries: [{ query: GET_TODOS }],
+    });
+  };
+
+  const handleDelete = async (id) => {
+    await deleteTodoMutation({
+      variables: { id },
+      refetchQueries: [{ query: GET_TODOS }],
+    });
+  };
+
+  return (
+    <div>
+      <AddTodo onAdd={handleAdd} />
+      <ul>
+        {data && data.todos.map(todo => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+          />
+        ))}
+      </ul>
+    </div>
+  );
 }

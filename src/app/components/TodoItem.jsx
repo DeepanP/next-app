@@ -1,23 +1,45 @@
 'use client';
 
-export default function TodoItem({ todo, onToggle, onDelete }) {
+import { useMutation, gql } from '@apollo/client';
+
+const TOGGLE_TODO = gql`
+  mutation ToggleTodo($id: ID!) {
+    toggleTodo(id: $id) {
+      id
+      completed
+    }
+  }
+`;
+
+const DELETE_TODO = gql`
+  mutation DeleteTodo($id: ID!) {
+    deleteTodo(id: $id)
+  }
+`;
+
+export default function TodoItem({ todo }) {
+  const [toggleTodo] = useMutation(TOGGLE_TODO, {
+    refetchQueries: ['GetTodos'],
+  });
+
+  const [deleteTodo] = useMutation(DELETE_TODO, {
+    refetchQueries: ['GetTodos'],
+  });
+
   const handleToggle = async () => {
-    const res = await fetch('/api/todos', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: todo.id }),
-    });
-    const updatedTodo = await res.json();
-    onToggle(updatedTodo);
+    try {
+      await toggleTodo({ variables: { id: todo.id } });
+    } catch (error) {
+      console.error('Error toggling todo:', error);
+    }
   };
 
   const handleDelete = async () => {
-    await fetch('/api/todos', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: todo.id }),
-    });
-    onDelete(todo.id);
+    try {
+      await deleteTodo({ variables: { id: todo.id } });
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
   };
 
   return (
