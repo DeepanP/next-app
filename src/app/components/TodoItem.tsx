@@ -17,18 +17,11 @@ const DELETE_TODO = gql`
   }
 `;
 
-export default function TodoItem({ todo }) {
-  const [toggleTodo] = useMutation(TOGGLE_TODO, {
-    refetchQueries: ['GetTodos'],
-  });
+export default function TodoItem({ todo, onToggle, onDelete}) {
 
-  const [deleteTodo] = useMutation(DELETE_TODO, {
-    refetchQueries: ['GetTodos'],
-  });
-
-  const handleToggle = async () => {
+  const handleToggle = () => {
     try {
-      await toggleTodo({ variables: { id: todo.id } });
+        onToggle(todo.id);
     } catch (error) {
       console.error('Error toggling todo:', error);
     }
@@ -36,7 +29,7 @@ export default function TodoItem({ todo }) {
 
   const handleDelete = async () => {
     try {
-      await deleteTodo({ variables: { id: todo.id } });
+        onDelete(todo.id);
     } catch (error) {
       console.error('Error deleting todo:', error);
     }

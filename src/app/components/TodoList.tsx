@@ -40,9 +40,7 @@ const DELETE_TODO = gql`
 `;
 
 export default function TodoList({ initialTodos }) {
-  const { data, refetch } = useQuery(GET_TODOS, {
-    initialData: initialTodos
-  });
+  const { data, refetch } = useQuery(GET_TODOS);
   const [addTodoMutation] = useMutation(ADD_TODO);
   const [toggleTodoMutation] = useMutation(TOGGLE_TODO);
   const [deleteTodoMutation] = useMutation(DELETE_TODO);

@@ -13,17 +13,14 @@ const ADD_TODO = gql`
   }
 `;
 
-export default function AddTodo() {
+export default function AddTodo({onAdd}) {
   const [text, setText] = useState('');
-  const [addTodo] = useMutation(ADD_TODO, {
-    refetchQueries: ['GetTodos'],
-  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
     try {
-      await addTodo({ variables: { text } });
+        onAdd(text);
       setText('');
     } catch (error) {
       console.error('Error adding todo:', error);

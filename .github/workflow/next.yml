@@ -1,8 +1,8 @@
-name: Build simple nextjs app
+name: Build graphql nextjs app
 on: push
 jobs: 
   name: build project
-  runs-on: ubuntu-lates
+  runs-on: ubuntu-latest
   steps:
   - name: Checkout code
     uses: actions/checkout@v3
