@@ -5,6 +5,10 @@ export const resolvers = {
     todos: async () => {
       return await Todo.find({});
     },
+
+    todo: async (_, {id}) => {
+        return await Todo.findById(id);
+    },
   },
   Mutation: {
     addTodo: async (_, { text }) => {

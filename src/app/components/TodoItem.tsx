@@ -1,22 +1,5 @@
 'use client';
 
-import { useMutation, gql } from '@apollo/client';
-
-const TOGGLE_TODO = gql`
-  mutation ToggleTodo($id: ID!) {
-    toggleTodo(id: $id) {
-      id
-      completed
-    }
-  }
-`;
-
-const DELETE_TODO = gql`
-  mutation DeleteTodo($id: ID!) {
-    deleteTodo(id: $id)
-  }
-`;
-
 export default function TodoItem({ todo, onToggle, onDelete}) {
 
   const handleToggle = () => {

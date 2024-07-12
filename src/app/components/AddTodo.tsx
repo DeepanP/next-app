@@ -1,17 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation, gql } from '@apollo/client';
-
-const ADD_TODO = gql`
-  mutation AddTodo($text: String!) {
-    addTodo(text: $text) {
-      id
-      text
-      completed
-    }
-  }
-`;
 
 export default function AddTodo({onAdd}) {
   const [text, setText] = useState('');

@@ -1,8 +1,9 @@
 'use client';
-
+import { Suspense, useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import AddTodo from './AddTodo';
 import TodoItem from './TodoItem';
+import Loading from '../loading';
 
 const GET_TODOS = gql`
   query GetTodos {
@@ -38,9 +39,14 @@ const DELETE_TODO = gql`
     deleteTodo(id: $id)
   }
 `;
+interface Todo {
+    id: number,
+    text: string,
+    completed: boolean
+};
 
 export default function TodoList({ initialTodos }) {
-  const { data, refetch } = useQuery(GET_TODOS);
+  const { data = initialTodos, refetch } = useQuery(GET_TODOS);
   const [addTodoMutation] = useMutation(ADD_TODO);
   const [toggleTodoMutation] = useMutation(TOGGLE_TODO);
   const [deleteTodoMutation] = useMutation(DELETE_TODO);
@@ -69,16 +75,18 @@ export default function TodoList({ initialTodos }) {
   return (
     <div>
       <AddTodo onAdd={handleAdd} />
-      <ul>
-        {data && data.todos.map(todo => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={handleToggle}
-            onDelete={handleDelete}
-          />
-        ))}
-      </ul>
+      <Suspense fallback={<Loading/>}>
+        <ul>
+            {data && data.todos.map(todo => (
+            <TodoItem
+                key={todo.id}
+                todo={todo}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+            />
+            ))}
+        </ul>
+      </Suspense>
     </div>
   );
 }
