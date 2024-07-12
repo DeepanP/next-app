@@ -2,20 +2,18 @@
 
 import { useState } from 'react';
 
-export default function AddTodo({ onAdd }) {
+export default function AddTodo({onAdd}) {
   const [text, setText] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
-    const res = await fetch('/api/todos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    const newTodo = await res.json();
-    onAdd(newTodo);
-    setText('');
+    try {
+        onAdd(text);
+      setText('');
+    } catch (error) {
+      console.error('Error adding todo:', error);
+    }
   };
 
   return (
